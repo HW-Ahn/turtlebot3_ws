@@ -70,7 +70,7 @@ class MainWindow(QMainWindow):
         if "DETECTED" in message.upper():
             item.setForeground(QColor("red")) # 텍스트 색상을 빨간색으로 설정
         elif "CLEARED" in message.upper():
-            item.setForeground(QColor("blue")) # 텍스트 색상을 빨간색으로 설정
+            item.setForeground(QColor("blue")) # 텍스트 색상을 파란색으로 설정
 
 
         self.ui.lw_log.addItem(item)
