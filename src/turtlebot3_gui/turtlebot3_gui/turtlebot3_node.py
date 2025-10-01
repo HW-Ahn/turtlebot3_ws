@@ -8,6 +8,7 @@ import rclpy
 from rclpy.node import Node
 from rclpy.qos import QoSProfile, ReliabilityPolicy, HistoryPolicy, qos_profile_sensor_data
 from typing import Callable
+import time
 
 # Custom Node for TurtleBot communication
 class TurtleBotNode(Node):
@@ -49,6 +50,9 @@ class TurtleBotNode(Node):
         )
         self.odom_log_count = 0 # 로그 출력 주기를 위한 카운터
 
+        self.is_obstacle_present = False
+        self.obstacle_detection_threshold = 0.5 # 장애물 감지 임계값 (미터)
+
     # =================================================================
     #                           Subscriber Callbacks
     # =================================================================
@@ -56,14 +60,40 @@ class TurtleBotNode(Node):
     def scan_callback(self, msg: LaserScan):
         """LaserScan 데이터 수신 시 호출"""
         self.scan_ranges = msg.ranges
+        front_area_ranges = [r for r in self.scan_ranges[150:211] if not math.isinf(r) and r > 0.0]
+        if front_area_ranges:
+            front_min_distance = min(front_area_ranges)
 
+        current_time = self.get_clock().now()
+
+        # --- 장애물 감지 로직 ---
+        new_obstacle_state = False
+        if front_min_distance < self.obstacle_detection_threshold:
+            new_obstacle_state = True
+
+        # 장애물 감지 상태가 변경되었을 때만 로그를 출력하여 중복 메시지를 방지합니다.
+        if new_obstacle_state and not self.is_obstacle_present:
+            # 장애물이 새로 감지된 경우
+            if self.log_callback:
+                self.log_callback(f"SCAN: !!! OBSTACLE DETECTED !!! Min dist: {front_min_distance:.2f} m")
+            # 로봇 움직임을 제어하는 로직은 여기에 추가하지 않습니다.
+            # (예: self.halt_robot() 또는 다른 움직임 명령)
+
+        elif not new_obstacle_state and self.is_obstacle_present:
+            # 장애물이 사라진 경우
+            if self.log_callback:
+                self.log_callback(f"SCAN: OBSTACLE CLEARED. Min dist: {front_min_distance:.2f} m")
+
+        self.is_obstacle_present = new_obstacle_state # 현재 장애물 상태 업데이트
         # 장애물 감지 로직을 여기에 추가할 수 있음
         min_distance = min(self.scan_ranges[0:30] + self.scan_ranges[330:360]) # 전방 60도 범위
 
         if self.log_callback:
-            # GUI의 lw_log에 실시간으로 로그를 전달 (5초에 한 번만 출력)
-            if self.get_clock().now().nanoseconds % (5 * 10**9) < 1 * 10**8:
-                self.log_callback(f"SCAN: Min Dist={min_distance:.2f} m")
+            # 5초에 한 번만 출력하도록 변경
+            # 너무 자주 출력되면 로그창이 빠르게 스크롤될 수 있습니다.
+            # 예시: 5초마다 출력 (5 * 10^9 나노초)
+            if current_time.nanoseconds % (1 * 10**9) < rclpy.duration.Duration(seconds=0.1).nanoseconds: # 약 0.1초 윈도우
+                self.log_callback(f"SCAN: Current Min Front Dist={front_min_distance:.2f} m")
 
     def odom_callback(self, msg: Odometry):
         """Odometry 데이터 수신 시 호출 (TurtlebotPose 코드 참고)"""

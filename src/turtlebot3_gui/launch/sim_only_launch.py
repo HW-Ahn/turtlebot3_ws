@@ -4,6 +4,7 @@ from launch import LaunchDescription
 from launch.actions import IncludeLaunchDescription
 from launch.launch_description_sources import PythonLaunchDescriptionSource
 from launch.substitutions import LaunchConfiguration
+from launch.actions import TimerAction
 
 def generate_launch_description():
     # ----------------------------------------------------
@@ -60,6 +61,10 @@ def generate_launch_description():
         }.items()
     )
 
+    delayed_spawn = TimerAction(
+        period=5.0, # 5초 지연
+        actions=[spawn_turtlebot_cmd]
+    )
     # ----------------------------------------------------
     # 2. LaunchDescription에 모든 액션 추가
     # ----------------------------------------------------
@@ -69,6 +74,8 @@ def generate_launch_description():
     ld.add_action(gzserver_cmd)
     ld.add_action(gzclient_cmd)
     ld.add_action(robot_state_publisher_cmd)
-    ld.add_action(spawn_turtlebot_cmd)
+
+    # ld.add_action(spawn_turtlebot_cmd)
+    ld.add_action(delayed_spawn)
 
     return ld

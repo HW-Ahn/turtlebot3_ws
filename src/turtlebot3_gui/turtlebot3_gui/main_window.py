@@ -1,7 +1,8 @@
 # main_window.py
 import sys
 import os
-from PySide6.QtWidgets import QApplication, QMainWindow
+from PySide6.QtWidgets import QApplication, QMainWindow, QListWidgetItem
+from PySide6.QtGui import QColor
 
 import rclpy # ROS 2 통신 라이브러리 추가
 from .robot_gui_ui import Ui_MainWindow # ui_test.py -> ui_robot_gui.py 이름 변경 가정
@@ -63,7 +64,16 @@ class MainWindow(QMainWindow):
     # 6. ROS 2 로그 수신 슬롯
     def update_log_widget(self, message):
         """ROS 2 쓰레드에서 넘어온 로그(오도메트리, 스캔 등)를 lw_log에 추가"""
-        self.ui.lw_log.addItem(message)
+        item = QListWidgetItem(message) # QListWidgetItem 객체 생성
+
+        # 'DETECTED' 단어가 메시지에 포함되어 있는지 확인 (대소문자 구분 없이)
+        if "DETECTED" in message.upper():
+            item.setForeground(QColor("red")) # 텍스트 색상을 빨간색으로 설정
+        elif "CLEARED" in message.upper():
+            item.setForeground(QColor("blue")) # 텍스트 색상을 빨간색으로 설정
+
+
+        self.ui.lw_log.addItem(item)
         self.ui.lw_log.scrollToBottom()
 
     # 7. 종료 이벤트 처리 (필수)

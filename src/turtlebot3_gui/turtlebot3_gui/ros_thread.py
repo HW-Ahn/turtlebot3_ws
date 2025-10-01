@@ -17,7 +17,7 @@ class RclpyThread(QThread):
     def __init__(self, parent=None):
         super().__init__(parent)
 
-        # 1. ROS 2 노드 및 Executor 준비
+        # 1. ROS 2 노드 및 Executor 준비ㅁ
         self.executor = SingleThreadedExecutor()
         # 이전에 정의한 TurtleBotNode 클래스의 인스턴스 생성
         self.node = TurtleBotNode()
