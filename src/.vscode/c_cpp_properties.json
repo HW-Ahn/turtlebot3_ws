@@ -1,0 +1,28 @@
+{
+  "configurations": [
+    {
+      "browse": {
+        "databaseFilename": "${default}",
+        "limitSymbolsToIncludedHeaders": false
+      },
+      "includePath": [
+        "/home/polestar3/turtlebot3_ws/install/turtlebot3_fake_node/include/**",
+        "/home/polestar3/turtlebot3_ws/install/turtlebot3_msgs/include/**",
+        "/home/polestar3/turtlebot3_ws/install/turtlebot3_gazebo/include/**",
+        "/home/polestar3/robot_ws/install/my_first_package_msgs/include/**",
+        "/home/polestar3/robot_ws/install/msg_srv_action_interface_example/include/**",
+        "/opt/ros/humble/include/**",
+        "/home/polestar3/turtlebot3_ws/src/turtlebot3/turtlebot3_node/include/**",
+        "/home/polestar3/turtlebot3_ws/src/turtlebot3_simulations/turtlebot3_fake_node/include/**",
+        "/home/polestar3/turtlebot3_ws/src/turtlebot3_simulations/turtlebot3_gazebo/include/**",
+        "/usr/include/**"
+      ],
+      "name": "ROS",
+      "intelliSenseMode": "gcc-x64",
+      "compilerPath": "/usr/bin/gcc",
+      "cStandard": "gnu11",
+      "cppStandard": "c++14"
+    }
+  ],
+  "version": 4
+}

@@ -1,0 +1,9 @@
+/.vscode
+/__pycache__
+/build
+/install
+/log
+/qt_test.py
+/robot_gui_ui.py
+/ui_robot_gui.ui
+/ui_robot_gui_ui.py
